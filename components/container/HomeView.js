@@ -1,7 +1,31 @@
 import React, { Component } from "react";
 import { Text, View, ScrollView, StyleSheet } from "react-native";
+import axios from "axios";
+
+import Button from "../presentational/Button";
 
 class HomeView extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentWeather: ""
+    };
+  }
+
+  componentDidMount() {
+    axios
+      .get("https://www.metaweather.com/api/location/2487956")
+      .then(res => {
+        this.setState({
+          ...this.state,
+          currentWeather: res.data.consolidated_weather[0].weather_state_name
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   render() {
     return (
       <ScrollView style={styles.scrollContainer}>
@@ -11,6 +35,14 @@ class HomeView extends Component {
             <Text style={styles.redText}>React Native</Text> app!
           </Text>
         </View>
+        <View>
+          {this.state.currentWeather ? (
+            <Text
+              style={styles.weatherText}
+            >{`Weather type: ${this.state.currentWeather}`}</Text>
+          ) : null}
+        </View>
+        <Button buttonText="Logout" buttonFunction={this.props.logoutApp} />
       </ScrollView>
     );
   }
